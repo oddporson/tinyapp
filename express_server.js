@@ -50,6 +50,7 @@ app.get("/urls/new", (req, res) => {
 
 // a page that give you the short URL
 app.get("/urls/:shortURL", (req, res) => {
+  console.log(urlDatabase)
   let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL] };
   res.render("urls_show", templateVars);
   
@@ -57,15 +58,19 @@ app.get("/urls/:shortURL", (req, res) => {
 
 
 // the body of the page like a mark up page?
-let shortURL = generateRandomString(6)
 
 app.post("/urls", (req, res) => {
+  const shortURL = generateRandomString(6)
   // console.log(req.body);  // Log the POST request body to the console
   // res.send(generateRandomString(6));     // Respond with 'Ok' (we will replace this)
+  urlDatabase[shortURL] = req.body.longURL
+
   res.redirect(`/urls/${shortURL}`);
-  urlDatabase[shortURL] = req.params.longURL;
-  
 });
 
-
-
+// Redirect any request to "/u/:shortURL" to its longURL
+app.get("/u/:shortURL", (req, res) => {
+  const longURL = urlDatabase[req.params.shortURL];
+  // console.log('long url: ', longURL)
+  res.redirect(longURL);
+});
