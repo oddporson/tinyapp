@@ -13,10 +13,16 @@ const urlDatabase = {
 };
 
 // random string generator
-function generateRandomString() {
-  return Math.random().toString(36).slice(2);
+function generateRandomString(getChars) {
+  let result           = '';
+  let randChars       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let charactersLength = randChars.length;
+  for ( let i = 0; i < getChars; i++ ) {
+     result += randChars.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return result;
 };
-console.log(generateRandomString());
+
 
 app.get("/", (req, res) => {
   res.send("Hello!");
@@ -46,5 +52,5 @@ app.get("/urls/:shortURL", (req, res) => {
 
 app.post("/urls", (req, res) => {
   console.log(req.body);  // Log the POST request body to the console
-  res.send("Ok");         // Respond with 'Ok' (we will replace this)
+  res.send(generateRandomString(6));         // Respond with 'Ok' (we will replace this)
 });
