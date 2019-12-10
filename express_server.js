@@ -7,12 +7,13 @@ app.set("view engine", "ejs");
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended: true}));
 
+// URL DATABASE
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
 };
 
-// random string generator
+// RANDOM GENERATOR
 function generateRandomString(getChars) {
   let result           = '';
   let randChars       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -23,11 +24,11 @@ function generateRandomString(getChars) {
   return result;
 };
 
+// app.get("/", (req, res) => {
+//   res.send("Hello World! Welcome to Tiny App.");
+// });
 
-app.get("/", (req, res) => {
-  res.send("Hello!");
-});
-
+// sever listening to port 8080
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
@@ -36,21 +37,35 @@ app.get("/hello", (req, res) => {
   res.send("<html><body>Hello <b>World</b></body></html>\n");e
 });
 
+// index page
 app.get("/urls", (req, res) => {
   let templateVars = { urls: urlDatabase };
   res.render("urls_index", templateVars);
 });
 
+// enter tiny url page
 app.get("/urls/new", (req, res) => {
   res.render("urls_new");
 });
 
+// a page that give you the short URL
 app.get("/urls/:shortURL", (req, res) => {
   let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL] };
   res.render("urls_show", templateVars);
+  
 });
 
+
+// the body of the page like a mark up page?
+let shortURL = generateRandomString(6)
+
 app.post("/urls", (req, res) => {
-  console.log(req.body);  // Log the POST request body to the console
-  res.send(generateRandomString(6));         // Respond with 'Ok' (we will replace this)
+  // console.log(req.body);  // Log the POST request body to the console
+  // res.send(generateRandomString(6));     // Respond with 'Ok' (we will replace this)
+  res.redirect(`/urls/${shortURL}`);
+  urlDatabase[shortURL] = req.params.longURL;
+  
 });
+
+
+
