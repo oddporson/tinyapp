@@ -134,9 +134,14 @@ app.get("/urls_registration", (req, res) => {
 });
 
 app.post("/urls_registration", (req, res) => {
+  // insert conditional statements
+  if (req.body.email === "" || req.body.password === "") {
+    res.send("Error 400")
+    console.log("Please type in your email and password.")
+  }
+
   let newUserID = generateRandomString();
   users[newUserID] = {
-    id: newUserID,
     email: req.body.email,
     password: req.body.password
   };
