@@ -64,8 +64,14 @@ app.post("/urls", (req, res) => {
   // console.log(req.body);  // Log the POST request body to the console
   // res.send(generateRandomString(6));     // Respond with 'Ok' (we will replace this)
   urlDatabase[shortURL] = req.body.longURL
-
   res.redirect(`/urls/${shortURL}`);
+});
+
+// DELETE 
+app.post("/urls/:shortURL/delete", (req, res) => {
+  //insert code that delete the short url
+  delete urlDatabase[req.params.shortURL];
+  res.redirect("/urls")
 });
 
 // Redirect any request to "/u/:shortURL" to its longURL
