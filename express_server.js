@@ -9,6 +9,20 @@ app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
 
+// USER DATABASE
+const users = { 
+  "userRandomID": {
+    id: "userRandomID", 
+    email: "user@example.com", 
+    password: "purple-monkey-dinosaur"
+  },
+ "user2RandomID": {
+    id: "user2RandomID", 
+    email: "user2@example.com", 
+    password: "dishwasher-funk"
+  }
+}
+
 // URL DATABASE
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
@@ -112,3 +126,21 @@ app.post("/logout", (req, res) => {
   res.redirect("urls");
 })
 
+
+
+// REGISTRATION
+app.get("/urls_registration", (req, res) => {
+  res.render("urls_registration");
+});
+
+app.post("/urls_registration", (req, res) => {
+  let newUserID = generateRandomString();
+  users[newUserID] = {
+    id: newUserID,
+    email: req.body.email,
+    password: req.body.password
+  };
+  console.log(users[newUserID])
+  res.cookie("userID", newUserID);
+  res.redirect("/urls");
+});
