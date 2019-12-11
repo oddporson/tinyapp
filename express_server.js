@@ -59,6 +59,7 @@ app.get("/urls/:shortURL", (req, res) => {
 
 
 // REDIRECT TO SHORT URL AFTER GENERATED RANDOM STRING
+// CREATE NEW URL THAT GENERATES SHORT URL
 app.post("/urls", (req, res) => {
   const shortURL = generateRandomString(6)
   // console.log(req.body);  // Log the POST request body to the console
@@ -76,13 +77,9 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 
 // EDIT URL AFTER CREATING NEW URL
 app.post("/urls/:id", (req, res) => {
-  //insert code that lets you edit the url
-  const shortURL = generateRandomString(6)
-  // console.log(req.body);  // Log the POST request body to the console
-  // res.send(generateRandomString(6));     // Respond with 'Ok' (we will replace this)
-  urlDatabase[shortURL] = req.body.longURL
-  res.redirect(`/urls/${shortURL}`);
-
+  //insert code that lets you edit the url then redirect you to urls page
+  urlDatabase[req.params.id] = req.body.longURL;
+  res.redirect("/urls")
 });
 
 // Redirect any request to "/u/:shortURL" to its longURL
