@@ -39,7 +39,10 @@ app.get("/hello", (req, res) => {
 
 // index page
 app.get("/urls", (req, res) => {
-  let templateVars = { urls: urlDatabase };
+  let templateVars = {
+    urls: urlDatabase,
+    username: req.cookies.username
+  };
   res.render("urls_index", templateVars);
 });
 
@@ -88,3 +91,11 @@ app.get("/u/:shortURL", (req, res) => {
   // console.log('long url: ', longURL)
   res.redirect(longURL);
 });
+
+// SIGN IN POST
+app.post("/login", (req, res) => {
+  res.cookie("username", req.body.username);
+  console.log(res.cookie);
+  res.redirect("/urls");
+});
+
