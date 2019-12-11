@@ -1,11 +1,13 @@
 const express = require('express');
 const app = express();
 const PORT = 8080; //default port 8080
+const bodyParser = require("body-parser");
+const cookieParser = require("cookie-parser");
+
 
 app.set("view engine", "ejs");
-
-const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended: true}));
+app.use(cookieParser());
 
 // URL DATABASE
 const urlDatabase = {
@@ -13,7 +15,7 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
-// RANDOM GENERATOR
+// RANDOM UNIQUE CHARACTER GENERATOR
 function generateRandomString(getChars) {
   let result           = '';
   let randChars       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -33,30 +35,37 @@ app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
 
-app.get("/hello", (req, res) => {
-  res.send("<html><body>Hello <b>World</b></body></html>\n");e
-});
+// app.get("/hello", (req, res) => {
+//   res.send("<html><body>Hello <b>World</b></body></html>\n");e
+// });
 
 // index page
 app.get("/urls", (req, res) => {
   let templateVars = {
     urls: urlDatabase,
-    username: req.cookies.username
+    username: req.cookies["username"]
   };
+  console.log(templateVars);
   res.render("urls_index", templateVars);
 });
 
 // enter tiny url page
 app.get("/urls/new", (req, res) => {
-  res.render("urls_new");
+  let templateVars = {
+    username: req.cookies["username"]
+  }
+  res.render("urls_new", templateVars);
 });
 
 // a page that give you the short URL
 app.get("/urls/:shortURL", (req, res) => {
   console.log(urlDatabase)
-  let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL] };
+  let templateVars = { 
+    shortURL: req.params.shortURL, 
+    longURL: urlDatabase[req.params.shortURL],
+    username: req.cookies["username"] 
+  }; 
   res.render("urls_show", templateVars);
-  
 });
 
 
@@ -65,13 +74,11 @@ app.get("/urls/:shortURL", (req, res) => {
 // CREATE NEW URL THAT GENERATES SHORT URL
 app.post("/urls", (req, res) => {
   const shortURL = generateRandomString(6)
-  // console.log(req.body);  // Log the POST request body to the console
-  // res.send(generateRandomString(6));     // Respond with 'Ok' (we will replace this)
   urlDatabase[shortURL] = req.body.longURL
   res.redirect(`/urls/${shortURL}`);
 });
 
-// DELETE URL
+// DELETE URL BUTTON
 app.post("/urls/:shortURL/delete", (req, res) => {
   //insert code that delete the short url
   delete urlDatabase[req.params.shortURL];
