@@ -77,7 +77,12 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 // EDIT URL AFTER CREATING NEW URL
 app.post("/urls/:id", (req, res) => {
   //insert code that lets you edit the url
-  
+  const shortURL = generateRandomString(6)
+  // console.log(req.body);  // Log the POST request body to the console
+  // res.send(generateRandomString(6));     // Respond with 'Ok' (we will replace this)
+  urlDatabase[shortURL] = req.body.longURL
+  res.redirect(`/urls/${shortURL}`);
+
 });
 
 // Redirect any request to "/u/:shortURL" to its longURL
