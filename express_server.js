@@ -57,8 +57,8 @@ app.get("/urls/:shortURL", (req, res) => {
 });
 
 
-// the body of the page like a mark up page?
 
+// REDIRECT TO SHORT URL AFTER GENERATED RANDOM STRING
 app.post("/urls", (req, res) => {
   const shortURL = generateRandomString(6)
   // console.log(req.body);  // Log the POST request body to the console
@@ -67,11 +67,17 @@ app.post("/urls", (req, res) => {
   res.redirect(`/urls/${shortURL}`);
 });
 
-// DELETE 
+// DELETE URL
 app.post("/urls/:shortURL/delete", (req, res) => {
   //insert code that delete the short url
   delete urlDatabase[req.params.shortURL];
   res.redirect("/urls")
+});
+
+// EDIT URL AFTER CREATING NEW URL
+app.post("/urls/:id", (req, res) => {
+  //insert code that lets you edit the url
+  
 });
 
 // Redirect any request to "/u/:shortURL" to its longURL
