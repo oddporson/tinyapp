@@ -131,15 +131,15 @@ app.post("/login", (req, res) => {
 });
 
 // SIGN OUT POST
-app.post("/logout", (req, res) => {
-  res.clearCookie("username", req.body.username);
-  // res.clearCookie(user);
-  res.redirect("/urls");
-});
+// app.post("/logout", (req, res) => {
+//   res.clearCookie("username", req.body.username);
+//   // res.clearCookie(user);
+//   res.redirect("/urls");
+// });
 
 
 
-// REGISTRATION
+// REGISTRATION PAGE
 app.get("/user_registration", (req, res) => {
   res.render("user_registration");
 });
@@ -163,4 +163,9 @@ app.post("/user_registration", (req, res) => {
     res.cookie("userID", newUserID);
     res.redirect("/urls");
   }
+});
+
+// LOGIN PAGE
+app.get("/user_login", (req, res) => {
+    res.render("user_login");
 });
