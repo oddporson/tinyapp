@@ -22,6 +22,25 @@ const users = {
     password: "dishwasher-funk"
   }
 }
+// EMAIL LOOK UP
+const findEmail = function(email, database) {
+  for (let keyUsers in database) {
+    if (database[keyUsers].email === email) {
+      return true;
+    }
+  }
+  return false;
+};
+
+
+const searchEmail = function(email, database) {
+  for (let key of database) {
+    if (database[key].email === email) {
+      return true;
+    }
+  }
+  return false;
+};
 
 // URL DATABASE
 const urlDatabase = {
@@ -40,26 +59,22 @@ function generateRandomString(getChars) {
   return result;
 };
 
-// app.get("/", (req, res) => {
-//   res.send("Hello World! Welcome to Tiny App.");
-// });
+app.get("/", (req, res) => {
+  res.send("Hello World! Welcome to Tiny App.");
+});
 
 // sever listening to port 8080
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
 
-// app.get("/hello", (req, res) => {
-//   res.send("<html><body>Hello <b>World</b></body></html>\n");e
-// });
-
 // index page
 app.get("/urls", (req, res) => {
   let templateVars = {
     urls: urlDatabase,
-    username: req.cookies["username"]
+    username: req.cookies["username"] // TODO: Fix me
   };
-  console.log(templateVars);
+  // console.log(templateVars);
   res.render("urls_index", templateVars);
 });
 
@@ -116,7 +131,7 @@ app.get("/u/:shortURL", (req, res) => {
 // SIGN IN POST
 app.post("/login", (req, res) => {
   res.cookie("username", req.body.username);
-  console.log(res.cookie);
+  // console.log('fuck', res.cookie);
   res.redirect("/urls");
 });
 
@@ -129,16 +144,19 @@ app.post("/logout", (req, res) => {
 
 
 // REGISTRATION
-app.get("/urls_registration", (req, res) => {
-  res.render("urls_registration");
+app.get("/user_registration", (req, res) => {
+  res.render("user_registration");
 });
 
-app.post("/urls_registration", (req, res) => {
+app.post("/user_registration", (req, res) => {
   // insert conditional statements
   if (req.body.email === "" || req.body.password === "") {
-    res.send("Error 400")
+    res.send("Error 400");
     console.log("Please type in your email and password.")
-  }
+  } else if (findEmail(req.body.email, users)) {
+    res.send("Error 400");
+    console.log("This email is already existed.")
+  } else {
 
   let newUserID = generateRandomString();
   users[newUserID] = {
@@ -148,4 +166,9 @@ app.post("/urls_registration", (req, res) => {
   console.log(users[newUserID])
   res.cookie("userID", newUserID);
   res.redirect("/urls");
+}
+
+
+
+
 });
