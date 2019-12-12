@@ -9,7 +9,7 @@ app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
 
-// USER DATABASE
+// USER DATABASE - REGISTRATION PAGE
 const users = {
   "userRandomID": {
     id: "userRandomID",
@@ -41,7 +41,7 @@ const urlDatabase = {
 };
 
 // RANDOM UNIQUE CHARACTER GENERATOR
-const generateRandomString = function(getChars) {
+function generateRandomString(getChars) {
   let result = '';
   let randChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   let charactersLength = randChars.length;
@@ -62,9 +62,12 @@ app.listen(PORT, () => {
 
 // INDEX PAGE
 app.get("/urls", (req, res) => {
+  const userID = req.cookies["userID"];
+  const user = users[userID];
+  console.log("users", users, userID);
   let templateVars = {
     urls: urlDatabase,
-    username: req.cookies["username"] // TODO: Fix me
+    user: user
   };
   // console.log(templateVars);
   res.render("urls_index", templateVars);
@@ -130,7 +133,8 @@ app.post("/login", (req, res) => {
 // SIGN OUT POST
 app.post("/logout", (req, res) => {
   res.clearCookie("username", req.body.username);
-  res.redirect("urls");
+  // res.clearCookie(user);
+  res.redirect("/urls");
 });
 
 
@@ -140,8 +144,8 @@ app.get("/user_registration", (req, res) => {
   res.render("user_registration");
 });
 
+
 app.post("/user_registration", (req, res) => {
-  // insert conditional statements
   if (req.body.email === "" || req.body.password === "") {
     res.send("Error 400");
     console.log("Please type in your email and password.");
@@ -149,13 +153,13 @@ app.post("/user_registration", (req, res) => {
     res.send("Error 400");
     console.log("This email is already existed.");
   } else {
-
-    let newUserID = generateRandomString();
+    let newUserID = generateRandomString(6);
     users[newUserID] = {
+      id: newUserID,
       email: req.body.email,
       password: req.body.password
     };
-    console.log(users[newUserID]);
+    // console.log(users[newUserID]);
     res.cookie("userID", newUserID);
     res.redirect("/urls");
   }
