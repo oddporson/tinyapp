@@ -32,16 +32,6 @@ const findEmail = function(email, database) {
   return false;
 };
 
-
-const searchEmail = function(email, database) {
-  for (let key of database) {
-    if (database[key].email === email) {
-      return true;
-    }
-  }
-  return false;
-};
-
 // URL DATABASE
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
@@ -155,7 +145,7 @@ app.post("/user_registration", (req, res) => {
     console.log("Please type in your email and password.")
   } else if (findEmail(req.body.email, users)) {
     res.send("Error 400");
-    console.log("This email is already existed.")
+    console.log("This email is aalready existed.")
   } else {
 
   let newUserID = generateRandomString();
