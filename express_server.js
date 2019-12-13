@@ -137,7 +137,7 @@ app.post("/login", (req, res) => {
     res.cookie("userID", result.id);
     res.redirect("/urls");
   } else{
-    res.send("Sorry username password not match"); // refactored by Rohit
+    res.send("Error: 403 - Email and password do not match"); // refactored by Rohit
   }
 });
 
