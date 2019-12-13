@@ -23,34 +23,21 @@ const users = {
   }
 };
 
-
-// EMAIL LOOK UP
-const findEmail = function(email, database) {
-  for (let keyUsers in database) {
-    if (database[keyUsers].email === email) {
-      return true;
-    }
-  }
-  return false;
-};
-
-
-// PASSWORD LOOKUP
-const findPassword = function(password, database) {
-  for (let key in database) {
-    if (users[key].password === password) {
-      return true;
-    }
-  }
-  return false;
-}
-
-
 // URL DATABASE
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
 };
+
+// EMAIL & PASSWORD LOOK UP
+function authenticateUser(email, password){
+  for(let key in users){
+    if(users[key].email=== email && users[key].password===password){
+      return users[key];
+    }
+  }
+  return null;
+}
 
 // RANDOM UNIQUE CHARACTER GENERATOR
 function generateRandomString(getChars) {
@@ -138,7 +125,6 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 
 
 
-
 // LOGIN PAGE
 app.get("/user_login", (req, res) => {
   res.render("user_login");
@@ -146,19 +132,13 @@ app.get("/user_login", (req, res) => {
 
 // SIGN IN POST
 app.post("/login", (req, res) => {
-  let userID = findEmail(req.body.email, users);
-  if (userID === false) {
-    res.send("Error 403: Email not found");
+  let result = authenticateUser(req.body.email, req.body.password);
+  if(result){
+    res.cookie("userID", result.id);
+    res.redirect("/urls");
+  } else{
+    res.send("Sorry username password not match"); // refactored by Rohit
   }
-  if (userID) {
-    let password = findPassword((req.body.password, users))
-      if (password === true) {
-        res.cookie("userID", newUserID);
-        res.redirect("/urls");
-      } else {
-        res.send("Error 403: Password is incorrect")
-      }
-    }
 });
 
 // SIGN OUT POST
@@ -172,7 +152,6 @@ app.post("/logout", (req, res) => {
 app.get("/user_registration", (req, res) => {
   res.render("user_registration");
 });
-
 
 app.post("/user_registration", (req, res) => {
   if (req.body.email === "" || req.body.password === "") {
