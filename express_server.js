@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-const PORT = 8080; //default port 8080
+const PORT = 8080;
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 
@@ -9,7 +9,13 @@ app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
 
-// USER DATABASE - REGISTRATION PAGE
+/* ------------------------------- SERVER LISTEN PORT 8080 ------------------------------- */
+app.listen(PORT, () => {
+  console.log(`Example app listening on port ${PORT}!`);
+});
+
+
+/* -------------------------------USER DATABASE -------------------------------*/
 const users = {
   "userRandomID": {
     id: "userRandomID",
@@ -23,13 +29,22 @@ const users = {
   }
 };
 
-// URL DATABASE
+/* ------------------------------- URL DATABASE ------------------------------- */
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  "9sm5xK": "http://www.google.com",
 };
 
-// EMAIL & PASSWORD LOOK UP
+/* ------------------------------- URLS FOR USER ------------------------------- */
+const urlsForUser = function(urlDatabase, userID) {
+  for (let item in urlDatabase) {
+    if(item === urlDatabase[userID].userID); {
+      return true;
+    }
+  }
+}
+
+/* ------------------------------- EMAIL & PASSWORD LOOK UP ------------------------------- */
 function authenticateUser(email, password){
   for(let key in users){
     if(users[key].email=== email && users[key].password===password){
@@ -39,7 +54,7 @@ function authenticateUser(email, password){
   return null;
 }
 
-// RANDOM UNIQUE CHARACTER GENERATOR
+/* ------------------------------- RANDOM UNIQUE CHARACTER GENERATOR ------------------------------- */
 function generateRandomString(getChars) {
   let result = '';
   let randChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -54,12 +69,9 @@ function generateRandomString(getChars) {
 //   res.send("Hello World! Welcome to Tiny App.");
 // });
 
-// SERVER LISTEN PORT 8080
-app.listen(PORT, () => {
-  console.log(`Example app listening on port ${PORT}!`);
-});
 
-// INDEX PAGE
+
+/* ------------------------------- INDEX PAGE ------------------------------- */ 
 app.get("/urls", (req, res) => {
   const userID = req.cookies["userID"];
   const user = users[userID];
@@ -72,7 +84,7 @@ app.get("/urls", (req, res) => {
   res.render("urls_index", templateVars);
 });
 
-// ENTER TINY URL
+/* ------------------------------- ENTER TINY URL ------------------------------- */
 app.get("/urls/new", (req, res) => {
   const userID = req.cookies["userID"];
   const user = users[userID];
@@ -83,7 +95,7 @@ app.get("/urls/new", (req, res) => {
   res.render("urls_new", templateVars);
 });
 
-// SHORT URL INTO LINK
+/* ------------------------------- SHORT URL INTO LINK ------------------------------- */
 app.get("/urls/:shortURL", (req, res) => {
   const userID = req.cookies["userID"];
   const user = users[userID];
@@ -95,17 +107,16 @@ app.get("/urls/:shortURL", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
-// REDIRECT TO SHORT URL AFTER GENERATED RANDOM STRING
-// CREATE NEW URL THAT GENERATES SHORT URL
+/* ------------------------------- CREATE NEW URL THAT GENERATES SHORT URL ------------------------------- */
 app.post("/urls", (req, res) => {
   const shortURL = generateRandomString(6);
   urlDatabase[shortURL] = req.body.longURL;
   res.redirect(`/urls/${shortURL}`);
 });
 
-// EDIT SHORT URL
-app.post("/urls/:id", (req, res) => {
+/* ------------------------------- SHORT URL DIRECTS THEM TO LONG URL WEBSITE ------------------------------- */
 
+app.post("/urls/:id", (req, res) => {
   urlDatabase[req.params.id] = req.body.longURL;
   res.redirect("/urls");
 });
@@ -115,17 +126,14 @@ app.get("/u/:shortURL", (req, res) => {
   res.redirect(longURL);
 });
 
-// DELETE URL BUTTON
+/* ------------------------------- DELETE URL BUTTON ------------------------------- */
 app.post("/urls/:shortURL/delete", (req, res) => {
   //insert code that delete the short url
   delete urlDatabase[req.params.shortURL];
   res.redirect("/urls");
 });
 
-
-
-
-// LOGIN PAGE
+/* ------------------------------- LOGIN PAGE ------------------------------- */
 app.get("/user_login", (req, res) => {
   const userID = req.cookies["userID"];
   const user = users[userID];
@@ -135,7 +143,7 @@ app.get("/user_login", (req, res) => {
   res.render("user_login", templateVars);
 });
 
-// SIGN IN POST
+/* ------------------------------- LOGIN POST ------------------------------- */
 app.post("/login", (req, res) => {
   let result = authenticateUser(req.body.email, req.body.password);
   if(result){
@@ -146,14 +154,14 @@ app.post("/login", (req, res) => {
   }
 });
 
-// SIGN OUT POST
+/* ------------------------------- LOGOUT POST ------------------------------- */
 app.post("/logout", (req, res) => {
   res.clearCookie("userID", req.body.username);
   res.redirect("/urls");
 });
 
 
-// REGISTRATION PAGE
+/* ------------------------------- REGISTRATION PAGE ------------------------------- */
 app.get("/user_registration", (req, res) => {
   const userID = req.cookies["userID"];
   const user = users[userID];
@@ -163,6 +171,7 @@ app.get("/user_registration", (req, res) => {
   res.render("user_registration", templateVars);
 });
 
+/* ------------------------------- REGISTRATION POST ------------------------------- */
 app.post("/user_registration", (req, res) => {
   if (req.body.email === "" || req.body.password === "") {
     res.send("Error 400");
