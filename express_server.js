@@ -35,15 +35,6 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com",
 };
 
-/* ------------------------------- URLS FOR USER ------------------------------- */
-const urlsForUser = function(urlDatabase, userID) {
-  for (let item in urlDatabase) {
-    if(item === urlDatabase[userID].userID); {
-      return true;
-    }
-  }
-}
-
 /* ------------------------------- EMAIL & PASSWORD LOOK UP ------------------------------- */
 function authenticateUser(email, password){
   for(let key in users){
@@ -65,12 +56,6 @@ function generateRandomString(getChars) {
   return result;
 }
 
-// app.get("/", (req, res) => {
-//   res.send("Hello World! Welcome to Tiny App.");
-// });
-
-
-
 /* ------------------------------- INDEX PAGE ------------------------------- */ 
 app.get("/urls", (req, res) => {
   const userID = req.cookies["userID"];
@@ -84,7 +69,7 @@ app.get("/urls", (req, res) => {
   res.render("urls_index", templateVars);
 });
 
-/* ------------------------------- ENTER TINY URL ------------------------------- */
+/* ------------------------------- TINY URL PAGE ------------------------------- */
 app.get("/urls/new", (req, res) => {
   const userID = req.cookies["userID"];
   const user = users[userID];
@@ -92,7 +77,11 @@ app.get("/urls/new", (req, res) => {
     username: req.cookies["userID"],
     user: user
   };
-  res.render("urls_new", templateVars);
+  if (user) {
+    res.render("urls_new", templateVars);
+  } else {
+    res.redirect("/user_login");
+  }
 });
 
 /* ------------------------------- SHORT URL INTO LINK ------------------------------- */
