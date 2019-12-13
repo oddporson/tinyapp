@@ -77,7 +77,7 @@ app.get("/urls/new", (req, res) => {
   const userID = req.cookies["userID"];
   const user = users[userID];
   let templateVars = {
-    username: req.cookies["username"],
+    username: req.cookies["userID"],
     user: user
   };
   res.render("urls_new", templateVars);
@@ -127,7 +127,12 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 
 // LOGIN PAGE
 app.get("/user_login", (req, res) => {
-  res.render("user_login");
+  const userID = req.cookies["userID"];
+  const user = users[userID];
+  let templateVars = {
+    user: user
+  };
+  res.render("user_login", templateVars);
 });
 
 // SIGN IN POST
@@ -150,7 +155,12 @@ app.post("/logout", (req, res) => {
 
 // REGISTRATION PAGE
 app.get("/user_registration", (req, res) => {
-  res.render("user_registration");
+  const userID = req.cookies["userID"];
+  const user = users[userID];
+  let templateVars = {
+    user: user
+  };
+  res.render("user_registration", templateVars);
 });
 
 app.post("/user_registration", (req, res) => {
