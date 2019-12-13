@@ -34,6 +34,18 @@ const findEmail = function(email, database) {
   return false;
 };
 
+
+// PASSWORD LOOKUP
+const findPassword = function(password, database) {
+  for (let key in database) {
+    if (users[key].password === password) {
+      return true;
+    }
+  }
+  return false;
+}
+
+
 // URL DATABASE
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
@@ -84,7 +96,7 @@ app.get("/urls/new", (req, res) => {
   res.render("urls_new", templateVars);
 });
 
-// a page that give you the short URL
+// SHORT URL INTO LINK
 app.get("/urls/:shortURL", (req, res) => {
   const userID = req.cookies["userID"];
   const user = users[userID];
@@ -96,14 +108,24 @@ app.get("/urls/:shortURL", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
-
-
 // REDIRECT TO SHORT URL AFTER GENERATED RANDOM STRING
 // CREATE NEW URL THAT GENERATES SHORT URL
 app.post("/urls", (req, res) => {
   const shortURL = generateRandomString(6);
   urlDatabase[shortURL] = req.body.longURL;
   res.redirect(`/urls/${shortURL}`);
+});
+
+// EDIT SHORT URL
+app.post("/urls/:id", (req, res) => {
+
+  urlDatabase[req.params.id] = req.body.longURL;
+  res.redirect("/urls");
+});
+
+app.get("/u/:shortURL", (req, res) => {
+  const longURL = urlDatabase[req.params.shortURL];
+  res.redirect(longURL);
 });
 
 // DELETE URL BUTTON
@@ -113,34 +135,37 @@ app.post("/urls/:shortURL/delete", (req, res) => {
   res.redirect("/urls");
 });
 
-// EDIT URL AFTER CREATING NEW URL
-app.post("/urls/:id", (req, res) => {
-  //insert code that lets you edit the url then redirect you to urls page
-  urlDatabase[req.params.id] = req.body.longURL;
-  res.redirect("/urls");
-});
 
-// Redirect any request to "/u/:shortURL" to its longURL
-app.get("/u/:shortURL", (req, res) => {
-  const longURL = urlDatabase[req.params.shortURL];
-  // console.log('long url: ', longURL)
-  res.redirect(longURL);
+
+
+
+// LOGIN PAGE
+app.get("/user_login", (req, res) => {
+  res.render("user_login");
 });
 
 // SIGN IN POST
 app.post("/login", (req, res) => {
-  res.cookie("userID", req.body.username);
-  // console.log('fuck', res.cookie);
-  res.redirect("/urls");
+  let userID = findEmail(req.body.email, users);
+  if (userID === false) {
+    res.send("Error 403: Email not found");
+  }
+  if (userID) {
+    let password = findPassword((req.body.password, users))
+      if (password === true) {
+        res.cookie("userID", newUserID);
+        res.redirect("/urls");
+      } else {
+        res.send("Error 403: Password is incorrect")
+      }
+    }
 });
 
 // SIGN OUT POST
 app.post("/logout", (req, res) => {
   res.clearCookie("userID", req.body.username);
-  // res.clearCookie(user);
   res.redirect("/urls");
 });
-
 
 
 // REGISTRATION PAGE
@@ -169,7 +194,4 @@ app.post("/user_registration", (req, res) => {
   }
 });
 
-// LOGIN PAGE
-app.get("/user_login", (req, res) => {
-  res.render("user_login");
-});
+
