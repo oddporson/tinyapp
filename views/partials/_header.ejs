@@ -16,19 +16,17 @@
      <!-- Username Login and Log Out Post Form in Conditional-->
 
      <div>
-
-       <% if (user) { %>
-        Logged in as: <%= user.email %>
-        <form action="/logout" method="POST">
-          <button type="submit" class="btn btn-outline-primary">Sign out</button>
-       </form>
-      <% } else { %> 
-      <form class="form-inline" action="/login" method="POST">
-        <div class="form-group">
-        <input class="form-control" type="text" name="username" placeholder="Username" style="width: 150px; margin: 1em">
-          <button type="submit" class="btn btn-outline-dark">Sign in</button>
-      </form>
-    <% } %>
+        <% if (user) { %>
+          <!-- Logged in as: <%= user.email %> -->
+          <form action="/logout" method="POST">
+           <label for="email">Logged in as: <%= user.email %></label>
+           <button type="submit" class="btn btn-outline-dark">Logout</button>
+         </form>
+        <% } else { %> 
+       <button type="submit" class="btn btn-outline-dark"><a href="/user_login">Login</a></button>
+       <button type="submit" class="btn btn-outline-dark"><a href="/user_registration">Register</a></button>
+      <% } %>
+  
     </div>
 
   </nav>
