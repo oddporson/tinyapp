@@ -157,7 +157,7 @@ app.post("/user_registration", (req, res) => {
   if (req.body.email === "" || req.body.password === "") {
     res.send("Error 400");
     console.log("Please type in your email and password.");
-  } else if (findEmail(req.body.email, users)) {
+  } else if (authenticateUser(req.body.email, users)) {
     res.send("Error 400");
     console.log("This email is already existed.");
   } else {
