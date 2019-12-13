@@ -75,19 +75,23 @@ app.get("/urls", (req, res) => {
 
 // ENTER TINY URL
 app.get("/urls/new", (req, res) => {
+  const userID = req.cookies["userID"];
+  const user = users[userID];
   let templateVars = {
-    username: req.cookies["username"]
+    username: req.cookies["username"],
+    user: user
   };
   res.render("urls_new", templateVars);
 });
 
 // a page that give you the short URL
 app.get("/urls/:shortURL", (req, res) => {
-  console.log(urlDatabase);
+  const userID = req.cookies["userID"];
+  const user = users[userID];
   let templateVars = {
     shortURL: req.params.shortURL,
     longURL: urlDatabase[req.params.shortURL],
-    username: req.cookies["username"]
+    user: user
   };
   res.render("urls_show", templateVars);
 });
@@ -125,17 +129,17 @@ app.get("/u/:shortURL", (req, res) => {
 
 // SIGN IN POST
 app.post("/login", (req, res) => {
-  res.cookie("username", req.body.username);
+  res.cookie("userID", req.body.username);
   // console.log('fuck', res.cookie);
   res.redirect("/urls");
 });
 
 // SIGN OUT POST
-// app.post("/logout", (req, res) => {
-//   res.clearCookie("username", req.body.username);
-//   // res.clearCookie(user);
-//   res.redirect("/urls");
-// });
+app.post("/logout", (req, res) => {
+  res.clearCookie("userID", req.body.username);
+  // res.clearCookie(user);
+  res.redirect("/urls");
+});
 
 
 
@@ -167,5 +171,5 @@ app.post("/user_registration", (req, res) => {
 
 // LOGIN PAGE
 app.get("/user_login", (req, res) => {
-    res.render("user_login");
+  res.render("user_login");
 });
