@@ -31,14 +31,21 @@ const users = {
 
 /* ------------------------------- URL DATABASE ------------------------------- */
 const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com",
+  "b2xVn2": {
+    longURL: "http://www.lighthouselabs.ca",
+    userID: "aJ48lW"
+  },
+  "9sm5xK": {
+    longURL: "https://www.google.com",
+    userID: "9sm5xK"
+  }
 };
 
+
 /* ------------------------------- EMAIL & PASSWORD LOOK UP ------------------------------- */
-function authenticateUser(email, password){
-  for(let key in users){
-    if(users[key].email=== email && users[key].password===password){
+function authenticateUser(email, password) {
+  for (let key in users) {
+    if (users[key].email === email && users[key].password === password) {
       return users[key];
     }
   }
@@ -56,7 +63,16 @@ function generateRandomString(getChars) {
   return result;
 }
 
-/* ------------------------------- INDEX PAGE ------------------------------- */ 
+/* ------------------------------- URLS FOR USER ------------------------------- */
+const urlsForUser = function(urlDatabase, userID) {
+  for (let key in urlDatabase) {
+    if (key === urlDatabase[userID].userID); {
+      return true;
+    }
+  }
+};
+
+/* ------------------------------- INDEX PAGE ------------------------------- */
 app.get("/urls", (req, res) => {
   const userID = req.cookies["userID"];
   const user = users[userID];
@@ -98,8 +114,9 @@ app.get("/urls/:shortURL", (req, res) => {
 
 /* ------------------------------- CREATE NEW URL THAT GENERATES SHORT URL ------------------------------- */
 app.post("/urls", (req, res) => {
+  // TODO: Check if user is logged in
   const shortURL = generateRandomString(6);
-  urlDatabase[shortURL] = req.body.longURL;
+  urlDatabase[shortURL] = {longURL: req.body.longURL, userID: req.cookies.userID};
   res.redirect(`/urls/${shortURL}`);
 });
 
@@ -115,12 +132,44 @@ app.get("/u/:shortURL", (req, res) => {
   res.redirect(longURL);
 });
 
-/* ------------------------------- DELETE URL BUTTON ------------------------------- */
+/* ------------------------------- USER ONLY - DELETE URL BUTTON  ------------------------------- */
 app.post("/urls/:shortURL/delete", (req, res) => {
   //insert code that delete the short url
-  delete urlDatabase[req.params.shortURL];
-  res.redirect("/urls");
+  const userID = req.cookies["userID"];
+  console.log('in delete------------->>>>>>', userID);
+  const user = users[userID];
+  console.log('user in delete ------->>>>>', user);
+  const urlObj = urlDatabase[req.params.shortURL]
+  if (user && userID === urlObj.userID) {
+    delete urlDatabase[req.params.shortURL];
+    res.redirect("/urls");
+  } else {
+    res.status(400).send("You can't touch this - MC Hammer");
+  }
 });
+
+/* ------------------------------- USER ONY - EDIT URL BUTTON  ------------------------------- */
+// app.post("/urls/:id", (req, res) => {
+//   urlDatabase[req.params.id]["longURL"] = req.body.longURL;
+app.post("/urls/:shortURL/edit", (req, res) => {
+  console.log('shortURL is:', req.params.shortURL);
+  const userID = req.cookies.userID;
+  console.log('userID:', userID);
+  const user = users[userID];
+  console.log('user:', user);
+  const urlObj = urlDatabase[req.params.shortURL];
+  console.log("urlObj:", urlObj);
+  if (user && userID === urlObj.userID) {
+    console.log('user ID:', user, "matches shortURL's user");
+      urlDatabase[req.params.shortURL].longURL = req.body.longURL;
+    // res.redirect("urls_show");
+    res.redirect(`/urls/${req.params.shortURL}`);
+  } else {
+    res.status(400).send("You can't touch this - MC Hammer");
+    }
+});
+   //res.redirect("/urls");
+
 
 /* ------------------------------- LOGIN PAGE ------------------------------- */
 app.get("/user_login", (req, res) => {
@@ -135,10 +184,10 @@ app.get("/user_login", (req, res) => {
 /* ------------------------------- LOGIN POST ------------------------------- */
 app.post("/login", (req, res) => {
   let result = authenticateUser(req.body.email, req.body.password);
-  if(result){
+  if (result) {
     res.cookie("userID", result.id);
     res.redirect("/urls");
-  } else{
+  } else {
     res.send("Error: 403 - Email and password do not match"); // refactored by Rohit
   }
 });
@@ -180,5 +229,3 @@ app.post("/user_registration", (req, res) => {
     res.redirect("/urls");
   }
 });
-
-
