@@ -27,9 +27,13 @@
             <td><%= urls[url] %></td>
             <!-- insert edit with ahref button -->
             <td>
-                <a href="/urls/<%= url %>" class="btn btn-outline-primary">
+                <!-- <a href="/urls/<%= url %>" class="btn btn-outline-primary">
                   Edit
-                </a>
+                </a> -->
+                <form method="POST" action="/urls/<%= url %>/edit">
+                  <button type="submit" class="btn btn-outline-primary">Edit</button>
+                </form>
+                
               </td>
             <!-- insert delete form method -->
               <td>
