@@ -128,7 +128,14 @@ app.post("/urls", (req, res) => {
 /* ------------------------------- SHORT URL DIRECTS THEM TO LONG URL WEBSITE ------------------------------- */
 
 app.post("/urls/:id", (req, res) => {
-  urlDatabase[req.params.id] = req.body.longURL;
+  console.log("we are getting on this route");
+  console.log(req.body.longURL);
+
+
+  //update the database with the new updated long url
+  urlDatabase[req.params.id].longURL = req.body.longURL;
+
+  //urlDatabase[req.params.id] = req.body.longURL;
   res.redirect("/urls");
 });
 
@@ -140,17 +147,28 @@ app.get("/u/:shortURL", (req, res) => {
 /* ------------------------------- USER ONLY - DELETE URL BUTTON  ------------------------------- */
 app.post("/urls/:shortURL/delete", (req, res) => {
   //insert code that delete the short url
-  const userID = req.cookies["userID"];
-  console.log('in delete------------->>>>>>', userID);
-  const user = users[userID];
-  console.log('user in delete ------->>>>>', user);
-  const urlObj = urlDatabase[req.params.shortURL]
-  if (user && userID === urlObj.userID) {
+  console.log("TEST ");
+  console.log(urlDatabase[req.params.shortURL].userID);
+  console.log(req.cookies["userID"]);
+
+  if (req.cookies["userID"] === urlDatabase[req.params.shortURL].userID) {
     delete urlDatabase[req.params.shortURL];
-    res.redirect("/urls");
+    res.redirect('/urls');
   } else {
     res.status(400).send("You can't touch this - MC Hammer");
   }
+
+  // const userID = req.cookies["userID"];
+  // console.log('in delete------------->>>>>>', userID);
+  // const user = users[userID];
+  // console.log('user in delete ------->>>>>', user);
+  // const urlObj = urlDatabase[req.params.shortURL]
+  // if (user && userID === urlObj.userID) {
+  //   delete urlDatabase[req.params.shortURL];
+  //   res.redirect("/urls");
+  // } else {
+  //   res.status(400).send("You can't touch this - MC Hammer");
+  // }
 });
 
 /* ------------------------------- USER ONY - EDIT URL BUTTON  ------------------------------- */
@@ -164,14 +182,14 @@ app.post("/urls/:shortURL/edit", (req, res) => {
   // console.log("urlObj:", urlObj);
   if (user && userID === urlObj.userID) {
     // console.log('user ID:', user, "matches shortURL's user");
-      urlDatabase[req.params.shortURL].longURL = req.body.longURL;
+    urlDatabase[req.params.shortURL].longURL = req.body.longURL;
     // res.redirect("urls_show");
     res.redirect(`/urls/${req.params.shortURL}`);
   } else {
     res.status(400).send("You can't touch this - MC Hammer");
-    }
+  }
 });
-   //res.redirect("/urls");
+//res.redirect("/urls");
 
 
 /* ------------------------------- LOGIN PAGE ------------------------------- */
@@ -232,5 +250,3 @@ app.post("/user_registration", (req, res) => {
     res.redirect("/urls");
   }
 });
-
-//comment
