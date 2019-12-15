@@ -20,11 +20,11 @@
           <!-- Logged in as: <%= user.email %> -->
           <form action="/logout" method="POST">
            <label for="email">Logged in as: <%= user.email %></label>
-           <button type="submit" class="btn btn-outline-dark">Logout</button>
+           <button type="submit" class="btn btn-outline-success">Logout</button>
          </form>
         <% } else { %> 
-          <a href="/user_login"><button type="submit" class="btn btn-outline-dark">Login</button></a>
-          <a href="/user_registration"><button type="submit" class="btn btn-outline-dark">Register</button></a>
+          <a href="/user_login"><button type="submit" class="btn btn-outline-success">Login</button></a>
+          <a href="/user_registration"><button type="submit" class="btn btn-outline-success">Register</button></a>
       <% } %>
   
     </div>
