@@ -86,7 +86,6 @@ app.get("/urls", (req, res) => {
     urls: urlDatabase,
     user: user
   };
-  // console.log(templateVars);
   res.render("urls_index", templateVars);
 });
 
@@ -119,7 +118,6 @@ app.get("/urls/:shortURL", (req, res) => {
 
 /* ------------------------------- CREATE NEW URL THAT GENERATES SHORT URL ------------------------------- */
 app.post("/urls", (req, res) => {
-  // TODO: Check if user is logged in
   const shortURL = generateRandomString(6);
   urlDatabase[shortURL] = {longURL: req.body.longURL, userID: req.cookies.userID};
   res.redirect(`/urls/${shortURL}`);
@@ -128,14 +126,8 @@ app.post("/urls", (req, res) => {
 /* ------------------------------- SHORT URL DIRECTS THEM TO LONG URL WEBSITE ------------------------------- */
 
 app.post("/urls/:id", (req, res) => {
-  console.log("we are getting on this route");
-  console.log(req.body.longURL);
-
-
   //update the database with the new updated long url
   urlDatabase[req.params.id].longURL = req.body.longURL;
-
-  //urlDatabase[req.params.id] = req.body.longURL;
   res.redirect("/urls");
 });
 
@@ -146,52 +138,26 @@ app.get("/u/:shortURL", (req, res) => {
 
 /* ------------------------------- USER ONLY - DELETE URL BUTTON  ------------------------------- */
 app.post("/urls/:shortURL/delete", (req, res) => {
-  //insert code that delete the short url
-  console.log("TEST ");
-  console.log(urlDatabase[req.params.shortURL].userID);
-  console.log(req.cookies["userID"]);
-
   if (req.cookies["userID"] === urlDatabase[req.params.shortURL].userID) {
     delete urlDatabase[req.params.shortURL];
     res.redirect('/urls');
   } else {
     res.status(400).send("You can't touch this - MC Hammer");
   }
-
-  // const userID = req.cookies["userID"];
-  // console.log('in delete------------->>>>>>', userID);
-  // const user = users[userID];
-  // console.log('user in delete ------->>>>>', user);
-  // const urlObj = urlDatabase[req.params.shortURL]
-  // if (user && userID === urlObj.userID) {
-  //   delete urlDatabase[req.params.shortURL];
-  //   res.redirect("/urls");
-  // } else {
-  //   res.status(400).send("You can't touch this - MC Hammer");
-  // }
 });
 
 /* ------------------------------- USER ONY - EDIT URL BUTTON  ------------------------------- */
 app.post("/urls/:shortURL/edit", (req, res) => {
-  // console.log('shortURL is:', req.params.shortURL);
   const userID = req.cookies.userID;
-  // console.log('userID:', userID);
   const user = users[userID];
-  // console.log('user:', user);
   const urlObj = urlDatabase[req.params.shortURL];
-  // console.log("urlObj:", urlObj);
   if (user && userID === urlObj.userID) {
-    // console.log('user ID:', user, "matches shortURL's user");
     urlDatabase[req.params.shortURL].longURL = req.body.longURL;
-    // res.redirect("urls_show");
     res.redirect(`/urls/${req.params.shortURL}`);
   } else {
     res.status(400).send("You can't touch this - MC Hammer");
   }
 });
-//res.redirect("/urls");
-
-
 /* ------------------------------- LOGIN PAGE ------------------------------- */
 app.get("/user_login", (req, res) => {
   const userID = req.cookies["userID"];
@@ -245,7 +211,6 @@ app.post("/user_registration", (req, res) => {
       email: req.body.email,
       password: req.body.password
     };
-    // console.log(users[newUserID]);
     res.cookie("userID", newUserID);
     res.redirect("/urls");
   }
