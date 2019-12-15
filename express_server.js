@@ -199,11 +199,9 @@ app.get("/user_registration", (req, res) => {
 /* ------------------------------- REGISTRATION POST ------------------------------- */
 app.post("/user_registration", (req, res) => {
   if (req.body.email === "" || req.body.password === "") {
-    res.send("Error 400");
-    console.log("Please type in your email and password.");
+    res.send("Error 400 - Please type in your email and password.");
   } else if (authenticateUser(req.body.email, users)) {
-    res.send("Error 400");
-    console.log("This email is already existed.");
+    res.send("Error 400 - This email is already existed.");
   } else {
     let newUserID = generateRandomString(6);
     users[newUserID] = {
