@@ -17,15 +17,20 @@ app.listen(PORT, () => {
 
 /* -------------------------------USER DATABASE -------------------------------*/
 const users = {
-  "userRandomID": {
+  userRandomID: {
     id: "userRandomID",
     email: "user@example.com",
     password: "purple-monkey-dinosaur"
   },
-  "user2RandomID": {
+  user2RandomID: {
     id: "user2RandomID",
     email: "user2@example.com",
     password: "dishwasher-funk"
+  },
+  hello: {
+    id: "hello",
+    email: "h@h",
+    password: "123"
   }
 };
 
@@ -106,7 +111,7 @@ app.get("/urls/:shortURL", (req, res) => {
   const user = users[userID];
   let templateVars = {
     shortURL: req.params.shortURL,
-    longURL: urlDatabase[req.params.shortURL],
+    longURL: urlDatabase[req.params.shortURL].longURL,
     user: user
   };
   res.render("urls_show", templateVars);
@@ -128,7 +133,7 @@ app.post("/urls/:id", (req, res) => {
 });
 
 app.get("/u/:shortURL", (req, res) => {
-  const longURL = urlDatabase[req.params.shortURL];
+  const longURL = urlDatabase[req.params.shortURL].longURL;
   res.redirect(longURL);
 });
 
@@ -149,18 +154,16 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 });
 
 /* ------------------------------- USER ONY - EDIT URL BUTTON  ------------------------------- */
-// app.post("/urls/:id", (req, res) => {
-//   urlDatabase[req.params.id]["longURL"] = req.body.longURL;
 app.post("/urls/:shortURL/edit", (req, res) => {
-  console.log('shortURL is:', req.params.shortURL);
+  // console.log('shortURL is:', req.params.shortURL);
   const userID = req.cookies.userID;
-  console.log('userID:', userID);
+  // console.log('userID:', userID);
   const user = users[userID];
-  console.log('user:', user);
+  // console.log('user:', user);
   const urlObj = urlDatabase[req.params.shortURL];
-  console.log("urlObj:", urlObj);
+  // console.log("urlObj:", urlObj);
   if (user && userID === urlObj.userID) {
-    console.log('user ID:', user, "matches shortURL's user");
+    // console.log('user ID:', user, "matches shortURL's user");
       urlDatabase[req.params.shortURL].longURL = req.body.longURL;
     // res.redirect("urls_show");
     res.redirect(`/urls/${req.params.shortURL}`);
@@ -229,3 +232,5 @@ app.post("/user_registration", (req, res) => {
     res.redirect("/urls");
   }
 });
+
+//comment
