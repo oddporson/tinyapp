@@ -24,14 +24,14 @@
         <% for(let url in urls) { %>
           <tr>
             <td><%= url %></td>
-            <td><%= urls[url] %></td>
+            <td><%= urls[url].longURL %></td>
             <!-- insert edit with ahref button -->
             <td>
                 <!-- <a href="/urls/<%= url %>" class="btn btn-outline-primary">
                   Edit
                 </a> -->
                 <form method="POST" action="/urls/<%= url %>/edit">
-                  <button type="submit" class="btn btn-outline-primary">Edit</button>
+                  <button type="submit" class="btn btn-outline-primary">Update</button>
                 </form>
                 
               </td>
