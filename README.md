@@ -7,12 +7,12 @@ TinyApp is a full stack web application built with Node and Express that allows 
 - Express
 - EJS
 - body-parser
-- cookies
+- cookie-parser
 
 ## Getting Started
 
 - Install all dependencies (using the `npm install` command).
-- Run the server using `node express_server.js` on CLI terminal.
+- Run the development web server using the `node express_server.js` command.
 
 ## Final Product
-!["screenshot of URLS page"](insert link here)
+!["screenshot of URLS page"](https://github.com/oddporson/tinyapp/blob/master/docs/urls-main-page.png)
