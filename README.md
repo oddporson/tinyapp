@@ -16,3 +16,8 @@ TinyApp is a full stack web application built with Node and Express that allows 
 
 ## Final Product
 !["screenshot of URLS page"](https://github.com/oddporson/tinyapp/blob/master/docs/urls-main-page.png)
+!["screenshot of URLS page"](https://github.com/oddporson/tinyapp/blob/master/docs/user-login-page.png)
+!["screenshot of URLS page"](https://github.com/oddporson/tinyapp/blob/master/docs/user-registration-page.png)
+!["screenshot of URLS page"](https://github.com/oddporson/tinyapp/blob/master/docs/create-url-page.png)
+!["screenshot of URLS page"](https://github.com/oddporson/tinyapp/blob/master/docs/edit-url-page.png)
+!["screenshot of URLS page"](https://github.com/oddporson/tinyapp/blob/master/docs/user-page.png)
