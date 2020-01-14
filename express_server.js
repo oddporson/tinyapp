@@ -9,12 +9,6 @@ app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
 
-/* ------------------------------- SERVER LISTEN PORT 8080 ------------------------------- */
-app.listen(PORT, () => {
-  console.log(`Example app listening on port ${PORT}!`);
-});
-
-
 /* -------------------------------USER DATABASE -------------------------------*/
 const users = {
   userRandomID: {
@@ -38,16 +32,20 @@ const users = {
 const urlDatabase = {
   "b2xVn2": {
     longURL: "http://www.lighthouselabs.ca",
-    userID: "aJ48lW"
+    userID: "user2RandomID"
   },
   "9sm5xK": {
     longURL: "https://www.google.com",
-    userID: "9sm5xK"
-  }
+    userID: "hello"
+  },
+  "7db8a2": {
+    longURL: "https://www.apple.com/ca/",
+    userID: "hello"
+  },
 };
 
 
-/* ------------------------------- EMAIL & PASSWORD LOOK UP ------------------------------- */
+/* --------------------------- EMAIL & PASSWORD LOOK UP ----------------------------- */
 function authenticateUser(email, password) {
   for (let key in users) {
     if (users[key].email === email && users[key].password === password) {
@@ -69,25 +67,54 @@ function generateRandomString(getChars) {
 }
 
 /* ------------------------------- URLS FOR USER ------------------------------- */
+
 const urlsForUser = function(urlDatabase, userID) {
+  // const userID = req.cookies["userID"];
   for (let key in urlDatabase) {
     if (key === urlDatabase[userID].userID); {
-      return true;
+      console.log("show me this:", urlDatabase[userID].userID)
+      // return true;
     }
   }
 };
 
 /* ------------------------------- INDEX PAGE ------------------------------- */
+
+/* TO DO: FIX THIS - ASK MENTOR FOR HELP! */
 app.get("/urls", (req, res) => {
   const userID = req.cookies["userID"];
+  console.log("this is userID:", userID);
   const user = users[userID];
-  console.log("users", users, userID);
   let templateVars = {
     urls: urlDatabase,
     user: user
   };
+
+  let userUrls = [];
+  for (const key in urlDatabase) {
+    const url = urlDatabase[key]
+    // console.log("show url:", url);
+    // console.log("shows userID:", url.userID);
+    if (url.userID === userID) {
+      userUrls.push(url);
+    }
+  }
   res.render("urls_index", templateVars);
 });
+
+// loop over urlsDatabase
+// showing url only if user is signed in ----->>>
+// if (req.cookies["idUser"] && urlsForUser(idUser) && urlsForUser(idUser).idUser === req.cookies.idUser) {
+//  longURL = urlsForUser(idUser).longURL;
+//  res.render("urls_index", templateVars);
+// } else {
+//  res.render("user_login", templateVars);
+// }
+
+  // }
+// }
+// res.render("urls_index", templateVars);
+
 
 /* ------------------------------- TINY URL PAGE ------------------------------- */
 app.get("/urls/new", (req, res) => {
@@ -171,8 +198,10 @@ app.get("/user_login", (req, res) => {
 /* ------------------------------- LOGIN POST ------------------------------- */
 app.post("/login", (req, res) => {
   let result = authenticateUser(req.body.email, req.body.password);
+  console.log("this is result:", result);
   if (result) {
     res.cookie("userID", result.id);
+    console.log("this is req.cookies:", req.cookie);
     res.redirect("/urls");
   } else {
     res.send("Error: 403 - Email and password do not match"); // refactored by Rohit
@@ -198,7 +227,7 @@ app.get("/user_registration", (req, res) => {
 
 /* ------------------------------- REGISTRATION POST ------------------------------- */
 app.post("/user_registration", (req, res) => {
-  if (req.body.email === "" || req.body.password === "") {
+  if (!req.body.email || !req.body.password) {
     res.send("Error 400 - Please type in your email and password.");
   } else if (authenticateUser(req.body.email, users)) {
     res.send("Error 400 - This email is already existed.");
@@ -212,4 +241,9 @@ app.post("/user_registration", (req, res) => {
     res.cookie("userID", newUserID);
     res.redirect("/urls");
   }
+});
+
+/* ------------------------------- SERVER LISTEN PORT 8080 ------------------------------- */
+app.listen(PORT, () => {
+  console.log(`Example app listening on port ${PORT}!`);
 });
