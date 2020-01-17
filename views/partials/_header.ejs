@@ -19,7 +19,7 @@
         <% if (user) { %>
           <!-- Logged in as: <%= user.email %> -->
           <form action="/logout" method="POST">
-           <label for="email">Logged in as: <%= user.email %></label>
+           <label for="email" style="color: white;">Logged in as: <%= user.email %></label>
            <button type="submit" class="btn btn-outline-success">Logout</button>
          </form>
         <% } else { %> 

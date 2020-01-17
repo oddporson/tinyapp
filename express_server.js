@@ -4,8 +4,8 @@ const PORT = 8080;
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 
-
 app.set("view engine", "ejs");
+
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
 
@@ -21,9 +21,9 @@ const users = {
     email: "user2@example.com",
     password: "dishwasher-funk"
   },
-  hello: {
-    id: "hello",
-    email: "h@h",
+  playerOne: {
+    id: "playerOne",
+    email: "p1@game.net",
     password: "123"
   }
 };
@@ -36,11 +36,11 @@ const urlDatabase = {
   },
   "9sm5xK": {
     longURL: "https://www.google.com",
-    userID: "hello"
+    userID: "playerOne"
   },
   "7db8a2": {
     longURL: "https://www.apple.com/ca/",
-    userID: "hello"
+    userID: "playerOne"
   },
 };
 
@@ -72,7 +72,7 @@ const urlsForUser = function(urlDatabase, userID) {
   // const userID = req.cookies["userID"];
   for (let key in urlDatabase) {
     if (key === urlDatabase[userID].userID); {
-      console.log("show me this:", urlDatabase[userID].userID)
+      console.log("show me this!!!!:", urlDatabase[userID].userID)
       // return true;
     }
   }
@@ -85,36 +85,28 @@ app.get("/urls", (req, res) => {
   const userID = req.cookies["userID"];
   console.log("this is userID:", userID);
   const user = users[userID];
+  console.log("WHY IS THIS USER UNDEFINED?!:",user) 
   let templateVars = {
     urls: urlDatabase,
     user: user
+    
   };
 
-  let userUrls = [];
+  let userUrls = {};
+  // console.log('this is user\'s urls:', userUrls);
   for (const key in urlDatabase) {
     const url = urlDatabase[key]
     // console.log("show url:", url);
     // console.log("shows userID:", url.userID);
     if (url.userID === userID) {
-      userUrls.push(url);
+      userUrls[key] = url;
+      
     }
   }
+  templateVars.urls = userUrls;
+  console.log('this is template URLS:', templateVars.urls);
   res.render("urls_index", templateVars);
 });
-
-// loop over urlsDatabase
-// showing url only if user is signed in ----->>>
-// if (req.cookies["idUser"] && urlsForUser(idUser) && urlsForUser(idUser).idUser === req.cookies.idUser) {
-//  longURL = urlsForUser(idUser).longURL;
-//  res.render("urls_index", templateVars);
-// } else {
-//  res.render("user_login", templateVars);
-// }
-
-  // }
-// }
-// res.render("urls_index", templateVars);
-
 
 /* ------------------------------- TINY URL PAGE ------------------------------- */
 app.get("/urls/new", (req, res) => {
@@ -133,14 +125,24 @@ app.get("/urls/new", (req, res) => {
 
 /* ------------------------------- SHORT URL INTO LINK ------------------------------- */
 app.get("/urls/:shortURL", (req, res) => {
-  const userID = req.cookies["userID"];
-  const user = users[userID];
-  let templateVars = {
-    shortURL: req.params.shortURL,
-    longURL: urlDatabase[req.params.shortURL].longURL,
-    user: user
-  };
-  res.render("urls_show", templateVars);
+  const userID = req.cookies["userID"]; // this is used to check if there's someone logged in
+  // check if cookies user ID exists
+    if(!userID) {
+      res.redirect("/user_login")
+    } else { //if theyre the owner of the url
+      //compare shortUrl's owner to the userId in cookie
+      const owner = urlDatabase[req.params.shortURL].userID //give you the owner of the url that you're trying to access
+      if(owner !== userID) {
+        res.status(400).send('Sorry, you are not the owner of the URL.')
+      }
+    }
+    const user = users[userID]// check if cookies with user ID does not exists then throw an error
+    let templateVars = {
+      shortURL: req.params.shortURL,
+      longURL: urlDatabase[req.params.shortURL].longURL, //error
+      user: user
+    };
+    res.render("urls_show", templateVars);
 });
 
 /* ------------------------------- CREATE NEW URL THAT GENERATES SHORT URL ------------------------------- */
@@ -173,7 +175,7 @@ app.post("/urls/:shortURL/delete", (req, res) => {
   }
 });
 
-/* ------------------------------- USER ONY - EDIT URL BUTTON  ------------------------------- */
+/* ------------------------------- USER ONLY - EDIT URL BUTTON  ------------------------------- */
 app.post("/urls/:shortURL/edit", (req, res) => {
   const userID = req.cookies.userID;
   const user = users[userID];
@@ -188,7 +190,9 @@ app.post("/urls/:shortURL/edit", (req, res) => {
 /* ------------------------------- LOGIN PAGE ------------------------------- */
 app.get("/user_login", (req, res) => {
   const userID = req.cookies["userID"];
+  console.log("login userID:", userID);
   const user = users[userID];
+  console.log("login user:", user);
   let templateVars = {
     user: user
   };
@@ -201,7 +205,7 @@ app.post("/login", (req, res) => {
   console.log("this is result:", result);
   if (result) {
     res.cookie("userID", result.id);
-    console.log("this is req.cookies:", req.cookie);
+    console.log("this is req.cookies:", req.cookies);
     res.redirect("/urls");
   } else {
     res.send("Error: 403 - Email and password do not match"); // refactored by Rohit
