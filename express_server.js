@@ -89,7 +89,7 @@ app.get("/urls", (req, res) => {
 
   let userUrls = {};
   for (const key in urlDatabase) {
-    const url = urlDatabase[key]
+    const url = urlDatabase[key];
     if (url.userID === userID) {
       userUrls[key] = url;
       
@@ -117,22 +117,22 @@ app.get("/urls/new", (req, res) => {
 /* ------------------------------- SHORT URL INTO LINK ------------------------------- */
 app.get("/urls/:shortURL", (req, res) => {
   const userID = req.cookies["userID"]; // this is used to check if there's someone logged in
-    if(!userID) {// check if cookies user ID exists
-      res.redirect("/user_login")
-    } else { //if theyre the owner of the url
-      //compare shortUrl's owner to the userId in cookie
-      const owner = urlDatabase[req.params.shortURL].userID //give you the owner of the url that you're trying to access
-      if(owner !== userID) {
-        res.status(400).send('Sorry, you are not the owner of the URL.')
-      }
+  if (!userID) {// check if cookies user ID exists
+    res.redirect("/user_login");
+  } else { //if theyre the owner of the url
+    //compare shortUrl's owner to the userId in cookie
+    const owner = urlDatabase[req.params.shortURL].userID; //give you the owner of the url that you're trying to access
+    if (owner !== userID) {
+      res.status(400).send('Sorry, you are not the owner of the URL.');
     }
-    const user = users[userID]// check if cookies with user ID does not exists then throw an error
-    let templateVars = {
-      shortURL: req.params.shortURL,
-      longURL: urlDatabase[req.params.shortURL].longURL, //error
-      user: user
-    };
-    res.render("urls_show", templateVars);
+  }
+  const user = users[userID];// check if cookies with user ID does not exists then throw an error
+  let templateVars = {
+    shortURL: req.params.shortURL,
+    longURL: urlDatabase[req.params.shortURL].longURL, //error
+    user: user
+  };
+  res.render("urls_show", templateVars);
 });
 
 /* ------------------------------- CREATE NEW URL THAT GENERATES SHORT URL ------------------------------- */
