@@ -69,23 +69,18 @@ function generateRandomString(getChars) {
 /* ------------------------------- URLS FOR USER ------------------------------- */
 
 const urlsForUser = function(urlDatabase, userID) {
-  // const userID = req.cookies["userID"];
   for (let key in urlDatabase) {
     if (key === urlDatabase[userID].userID); {
-      console.log("show me this!!!!:", urlDatabase[userID].userID)
-      // return true;
+      return true;
     }
   }
 };
 
 /* ------------------------------- INDEX PAGE ------------------------------- */
 
-/* TO DO: FIX THIS - ASK MENTOR FOR HELP! */
 app.get("/urls", (req, res) => {
   const userID = req.cookies["userID"];
-  console.log("this is userID:", userID);
   const user = users[userID];
-  console.log("WHY IS THIS USER UNDEFINED?!:",user) 
   let templateVars = {
     urls: urlDatabase,
     user: user
@@ -93,18 +88,14 @@ app.get("/urls", (req, res) => {
   };
 
   let userUrls = {};
-  // console.log('this is user\'s urls:', userUrls);
   for (const key in urlDatabase) {
     const url = urlDatabase[key]
-    // console.log("show url:", url);
-    // console.log("shows userID:", url.userID);
     if (url.userID === userID) {
       userUrls[key] = url;
       
     }
   }
   templateVars.urls = userUrls;
-  console.log('this is template URLS:', templateVars.urls);
   res.render("urls_index", templateVars);
 });
 
@@ -126,8 +117,7 @@ app.get("/urls/new", (req, res) => {
 /* ------------------------------- SHORT URL INTO LINK ------------------------------- */
 app.get("/urls/:shortURL", (req, res) => {
   const userID = req.cookies["userID"]; // this is used to check if there's someone logged in
-  // check if cookies user ID exists
-    if(!userID) {
+    if(!userID) {// check if cookies user ID exists
       res.redirect("/user_login")
     } else { //if theyre the owner of the url
       //compare shortUrl's owner to the userId in cookie
@@ -155,7 +145,7 @@ app.post("/urls", (req, res) => {
 /* ------------------------------- SHORT URL DIRECTS THEM TO LONG URL WEBSITE ------------------------------- */
 
 app.post("/urls/:id", (req, res) => {
-  //update the database with the new updated long url
+  //updates the database with the new updated long url
   urlDatabase[req.params.id].longURL = req.body.longURL;
   res.redirect("/urls");
 });
@@ -190,9 +180,7 @@ app.post("/urls/:shortURL/edit", (req, res) => {
 /* ------------------------------- LOGIN PAGE ------------------------------- */
 app.get("/user_login", (req, res) => {
   const userID = req.cookies["userID"];
-  console.log("login userID:", userID);
   const user = users[userID];
-  console.log("login user:", user);
   let templateVars = {
     user: user
   };
@@ -234,7 +222,7 @@ app.post("/user_registration", (req, res) => {
   if (!req.body.email || !req.body.password) {
     res.send("Error 400 - Please type in your email and password.");
   } else if (authenticateUser(req.body.email, users)) {
-    res.send("Error 400 - This email is already existed.");
+    res.send("Sorry. This email is already existed.");
   } else {
     let newUserID = generateRandomString(6);
     users[newUserID] = {
